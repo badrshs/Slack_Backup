@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Channels;
+use App\Conversations;
 use App\Http\Controllers\Service\SlackBackupService;
 
 class SlackController extends Controller
@@ -41,7 +42,7 @@ class SlackController extends Controller
             return;
         $this->slackBackup->storeConversations($channel->id);
 
-        return redirect()->back();
+        return redirect()->route('channel',$channel->id);
     }
 
     public function storeAllConversations()
@@ -58,4 +59,14 @@ class SlackController extends Controller
         $this->storeAllConversations();
     }
 
+    public function deleteConversations (Conversations $message)
+    {
+        if(!$message->user== auth()->id())
+            abort(401);
+        $message->text = "";
+        $message->save();
+        $message->delete();
+
+        return redirect()->back();
+    }
 }

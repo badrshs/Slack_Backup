@@ -25,6 +25,9 @@ Route::get('/store/channels/main', 'SlackController@storeMainChannels')->middlew
 Route::get('/store/channels/private', 'SlackController@storePrivateChannels')->middleware('auth');
 Route::get('/store/conversations/all', 'SlackController@storeAllConversations')->middleware('auth');
 Route::get('/store/conversations/{channel}', 'SlackController@storeConversations')->name("backup.channel")->middleware('auth');
+Route::get('/delete/message/{message}', 'SlackController@deleteConversations')->name("message.delete")->middleware('auth');
+
+
 Route::get('/channels', 'HomeController@index')->name('home');
 Route::get('/channels/{channel}', 'HomeController@channel')->name('channel');
 Route::get('login/slack', 'Auth\LoginController@redirectToProvider')->name('login.slack');

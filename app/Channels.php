@@ -16,7 +16,7 @@ class Channels extends Model
     }
 
     public function getHasAuthAttribute(){
-        return ChannelMembers::where('user_id',auth()->id())->where('channel_id', $this->id)->exists();
+        return $this->channelMember()->where('user_id', auth()->id())->exists();
     }
     public function getIsChannelAttribute(){
         return !$this->is_private && !$this->is_im  && !$this->is_mpim ;
@@ -24,5 +24,9 @@ class Channels extends Model
 
     public function getIsDirectAttribute(){
         return $this->is_private && ($this->is_im  || $this->is_mpim) ;
+    }
+
+    public function channelMember(){
+        return $this->hasMany(ChannelMembers::class,'channel_id','id');
     }
 }

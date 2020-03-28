@@ -6,7 +6,6 @@ use App\ChannelMembers;
 use App\Channels;
 use App\Conversations;
 use App\User;
-use Grpc\Channel;
 
 class SlackBackupService
 {
@@ -72,9 +71,22 @@ class SlackBackupService
     {
         $messages = $this->slack->retrieveMessages($channelId);
         foreach ($messages as $msg) {
-            if (isset($msg->client_msg_id) && !Channels::find($msg->client_msg_id)) {
+            if (isset($msg->client_msg_id) && !Conversations::withTrashed()->where('client_msg_id',$msg->client_msg_id)->exists()) {
                 $message = ['client_msg_id' => $msg->client_msg_id, 'type' => $msg->type, 'text' => $msg->text, 'user' => $msg->user, 'ts' => $msg->ts, 'channel_id' => $channelId];
                 Conversations::firstOrCreate($message);
+            }
+        }
+    }
+
+
+    public function BackupEveryThing(){
+        $this->storeUsers();
+        $this->storeMainChannels();
+        $this->storePrivateChannels();
+
+        foreach (Channels::all() as $channel){
+            if($channel->is_channel){
+                $this->storeConversations($channel->id);
             }
         }
     }

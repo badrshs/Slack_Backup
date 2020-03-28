@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\ChannelMembers;
 use App\Channels;
+use App\Conversations;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -28,4 +29,5 @@ class HomeController extends Controller
         $data['current_channel'] = $channel;
         return view('home', $data);
     }
+
 }

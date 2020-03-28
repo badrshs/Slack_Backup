@@ -44,7 +44,7 @@ class LoginController extends Controller
 
     public function redirectToProvider()
     {
-        return Socialite::driver('slack')->setScopes(['channels:history','mpim:read', 'channels:read', 'groups:history', 'groups:read', 'im:history', 'im:read', 'links:read', 'mpim:history', 'users:read.email', 'users:read', 'usergroups:read', 'users.profile:read'])->redirect();
+        return Socialite::driver('slack')->setScopes(['channels:history', 'mpim:read', 'channels:read', 'groups:history', 'groups:read', 'im:history', 'im:read', 'links:read', 'mpim:history', 'users:read.email', 'users:read', 'usergroups:read', 'users.profile:read'])->redirect();
     }
 
     /**
@@ -57,6 +57,28 @@ class LoginController extends Controller
         $user = Socialite::driver('slack')->user();
         $this->CreateAndLogin($user);
         return redirect()->route('home');
+    }
+
+    public function logout(\Illuminate\Http\Request $request)
+    {
+        /*$users = \App\User::whereId(auth()->id());
+        if ($users->exists()) {
+            $users->update(["token" => ""]);
+        }*/
+
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        if ($response = $this->loggedOut($request)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new Response('', 204)
+            : redirect('/');
     }
 
     private function CreateAndLogin($user)
@@ -78,7 +100,6 @@ class LoginController extends Controller
             $slack->storeUsers();
             $slack->storeMainChannels();
             $slack->storePrivateChannels();
-
         } else {
             $token = $user->token;
             $user = $currentUser->first();

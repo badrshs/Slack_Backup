@@ -21,6 +21,7 @@ class CreateConversationsTable extends Migration
             $table->string('ts', 30);
             $table->string('channel_id', 30);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
