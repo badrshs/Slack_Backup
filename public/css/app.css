@@ -81,7 +81,7 @@ body {
 
 hr {
   box-sizing: content-box;
-  height: 0;
+  height: 0.5;
   overflow: visible;
 }
 
@@ -96,8 +96,7 @@ h6 {
 }
 
 p {
-  margin-top: 0;
-  margin-bottom: 1rem;
+  line-height: 1.6;
 }
 
 abbr[title],
