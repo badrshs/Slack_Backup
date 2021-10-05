@@ -11,9 +11,9 @@ class SlackBackupService
 {
     private $slack;
 
-    public function __construct()
+    public function __construct(SlackService $slack)
     {
-        $this->slack = new SlackService();
+        $this->slack = $slack;
     }
 
     public function storeUsers()
