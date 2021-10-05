@@ -16,6 +16,19 @@ class SlackBackupService
         $this->slack = $slack;
     }
 
+    public function BackupEveryThing()
+    {
+        $this->storeUsers();
+        $this->storeMainChannels();
+        $this->storePrivateChannels();
+
+        foreach (Channels::all() as $channel) {
+            if ($channel->is_channel) {
+                $this->storeConversations($channel->id);
+            }
+        }
+    }
+
     public function storeUsers()
     {
         $users = $this->slack->listUser();
@@ -42,6 +55,14 @@ class SlackBackupService
         }
     }
 
+    public function storeChannelsMembers($channelId)
+    {
+        $users = $this->slack->retrieveChannelMembers($channelId);
+        foreach ($users as $user) {
+            ChannelMembers::firstOrCreate(['user_id' => $user, 'channel_id' => $channelId]);
+        }
+    }
+
     public function storePrivateChannels() // direct message and group
     {
         $channels = $this->slack->ListChannels("mpim,im");
@@ -59,34 +80,13 @@ class SlackBackupService
         }
     }
 
-    public function storeChannelsMembers($channelId)
-    {
-        $users = $this->slack->retrieveChannelMembers($channelId);
-        foreach ($users as $user) {
-            ChannelMembers::firstOrCreate(['user_id' => $user, 'channel_id' => $channelId]);
-        }
-    }
-
     public function storeConversations($channelId)
     {
         $messages = $this->slack->retrieveMessages($channelId);
         foreach ($messages as $msg) {
-            if (isset($msg->client_msg_id) && !Conversations::withTrashed()->where('client_msg_id',$msg->client_msg_id)->exists()) {
+            if (isset($msg->client_msg_id) && !Conversations::withTrashed()->where('client_msg_id', $msg->client_msg_id)->exists()) {
                 $message = ['client_msg_id' => $msg->client_msg_id, 'type' => $msg->type, 'text' => $msg->text, 'user' => $msg->user, 'ts' => $msg->ts, 'channel_id' => $channelId];
                 Conversations::firstOrCreate($message);
-            }
-        }
-    }
-
-
-    public function BackupEveryThing(){
-        $this->storeUsers();
-        $this->storeMainChannels();
-        $this->storePrivateChannels();
-
-        foreach (Channels::all() as $channel){
-            if($channel->is_channel){
-                $this->storeConversations($channel->id);
             }
         }
     }

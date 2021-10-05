@@ -59,28 +59,6 @@ class LoginController extends Controller
         return redirect()->route('home');
     }
 
-    public function logout(\Illuminate\Http\Request $request)
-    {
-        /*$users = \App\User::whereId(auth()->id());
-        if ($users->exists()) {
-            $users->update(["token" => ""]);
-        }*/
-
-        $this->guard()->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        if ($response = $this->loggedOut($request)) {
-            return $response;
-        }
-
-        return $request->wantsJson()
-            ? new Response('', 204)
-            : redirect('/');
-    }
-
     private function CreateAndLogin($user)
     {
         $currentUser = User::where('email', $user->getEmail());
@@ -107,5 +85,27 @@ class LoginController extends Controller
             $user->save();
             \Auth::login($user, true);
         }
+    }
+
+    public function logout(\Illuminate\Http\Request $request)
+    {
+        /*$users = \App\User::whereId(auth()->id());
+        if ($users->exists()) {
+            $users->update(["token" => ""]);
+        }*/
+
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        if ($response = $this->loggedOut($request)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new Response('', 204)
+            : redirect('/');
     }
 }

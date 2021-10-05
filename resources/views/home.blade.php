@@ -47,7 +47,7 @@
                         {{ __('Logout') }}
                     </a>
                 </div>
-                <h4>Total BackedUp Messages  </h4>
+                <h4>Total BackedUp Messages </h4>
                 <span style="padding: 20px; font-size: 30px; font-weight: 700; color: #E91E63; text-align: center;">
         {{\App\Conversations::all()->count()}} <small style="font-size: 40%;">messages</small>
 
