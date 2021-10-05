@@ -8,5 +8,5 @@ class SlackUser extends Model
 {
     protected $keyType = 'string';
 
-    protected $fillable = ['id','name','color','image','email'];
+    protected $fillable = ['id', 'name', 'color', 'image', 'email'];
 }

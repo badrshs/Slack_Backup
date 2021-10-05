@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ChannelMembers;
 use App\Channels;
-use App\Conversations;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,8 +21,8 @@ class HomeController extends Controller
 
     public function channel(Channels $channel)
     {
-       if(!$channel->has_auth)
-           abort(401);
+        if (!$channel->has_auth)
+            abort(401);
         $data['channels'] = Channels::get();
         $data['current_channel'] = $channel;
         return view('home', $data);

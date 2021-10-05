@@ -13,18 +13,9 @@ class SlackService
         $this->httpClient = new Client();
     }
 
-    public function http($query, $parameters = [])
+    public function ListChannels($types)
     {
-        $parameters["limit"] = 1000;
-        $parameters["token"] = auth()->user()->token;
-        $query .= "?";
-        foreach ($parameters as $key => $item) {
-            $query .= $key . "=" . $item . "&";
-        }
-        $endpoint = "https://slack.com/api/$query";
-        $client = new Client();
-        $response = $client->request('GET', $endpoint);
-        return json_decode($response->getBody()->getContents());
+        return $this->get("conversations.list", ["types" => $types], "channels");
     }
 
     public function get($name, $parameters = null, $content_key = null)
@@ -47,9 +38,18 @@ class SlackService
         return $data;
     }
 
-    public function ListChannels($types)
+    public function http($query, $parameters = [])
     {
-        return $this->get("conversations.list", ["types" => $types], "channels");
+        $parameters["limit"] = 1000;
+        $parameters["token"] = auth()->user()->token;
+        $query .= "?";
+        foreach ($parameters as $key => $item) {
+            $query .= $key . "=" . $item . "&";
+        }
+        $endpoint = "https://slack.com/api/$query";
+        $client = new Client();
+        $response = $client->request('GET', $endpoint);
+        return json_decode($response->getBody()->getContents());
     }
 
     public function listUser()

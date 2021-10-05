@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Channels;
 use App\Conversations;
 use App\Http\Controllers\Service\SlackBackupService;
@@ -14,9 +15,32 @@ class SlackController extends Controller
         $this->slackBackup = new SlackBackupService();
     }
 
+    public function storeChannelsMembers($channel)
+    {
+        $this->slackBackup->storeChannelsMembers($channel);
+
+    }
+
+    public function storeConversations(Channels $channel)
+    {
+        if (!$channel->has_auth)
+            return;
+        $this->slackBackup->storeConversations($channel->id);
+
+        return redirect()->route('channel', $channel->id);
+    }
+
+    public function storeEverything()
+    {
+        $this->storeUsers();
+        $this->storeMainChannels();
+        $this->storePrivateChannels();
+        $this->storeAllConversations();
+    }
+
     public function storeUsers()
     {
-      $this->slackBackup->storeUsers();
+        $this->slackBackup->storeUsers();
     }
 
     public function storeMainChannels()
@@ -30,38 +54,15 @@ class SlackController extends Controller
 
     }
 
-    public function storeChannelsMembers($channel)
-    {
-        $this->slackBackup->storeChannelsMembers($channel);
-
-    }
-
-    public function storeConversations(Channels $channel)
-    {
-        if(!$channel->has_auth)
-            return;
-        $this->slackBackup->storeConversations($channel->id);
-
-        return redirect()->route('channel',$channel->id);
-    }
-
     public function storeAllConversations()
     {
         foreach (Channels::all() as $channel)
-        $this->slackBackup->storeConversations($channel->id);
+            $this->slackBackup->storeConversations($channel->id);
     }
 
-    public function storeEverything()
+    public function deleteConversations(Conversations $message)
     {
-        $this->storeUsers();
-        $this->storeMainChannels();
-        $this->storePrivateChannels();
-        $this->storeAllConversations();
-    }
-
-    public function deleteConversations (Conversations $message)
-    {
-        if(!$message->user== auth()->id())
+        if (!$message->user == auth()->id())
             abort(401);
         $message->text = "";
         $message->save();
