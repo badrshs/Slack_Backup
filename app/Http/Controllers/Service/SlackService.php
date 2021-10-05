@@ -8,9 +8,9 @@ class SlackService
 {
     protected $httpClient;
 
-    public function __construct()
+    public function __construct(Client $client)
     {
-        $this->httpClient = new Client();
+        $this->httpClient = $client;
     }
 
     public function ListChannels($types)
@@ -21,20 +21,15 @@ class SlackService
     public function get($name, $parameters = null, $content_key = null)
     {
         $data = array();
-        $cursor = null;
         do {
             $response = $this->http($name, $parameters);
 
-            if (isset($response->response_metadata->next_cursor)) {
-                $cursor = $response->response_metadata->next_cursor;
-            } else {
-                $cursor = null;
-            }
+            $cursor = $response->response_metadata->next_cursor ?? null;
             $data[] = $response->$content_key;
         } while ($cursor != null);
 
-
         return call_user_func_array('array_merge', $data);
+
         return $data;
     }
 
@@ -47,8 +42,9 @@ class SlackService
             $query .= $key . "=" . $item . "&";
         }
         $endpoint = "https://slack.com/api/$query";
-        $client = new Client();
-        $response = $client->request('GET', $endpoint);
+
+        $response = $this->httpClient->request('GET', $endpoint);
+
         return json_decode($response->getBody()->getContents());
     }
 
@@ -66,5 +62,4 @@ class SlackService
     {
         return $this->get("conversations.members", ["channel" => $channelId], "members");
     }
-
 }
