@@ -33,15 +33,21 @@ class SlackBackupService
     {
         $users = $this->slack->listUser();
         foreach ($users as $user) {
-            if (!User::find($user->id))
-                User::Create([
+            if (!User::find($user->id)){
+                if((isset($user->color) 
+                $color = $user->color;
+                else
+                $color = "black";
+             User::Create([
                     'id' => $user->id,
                     'username' => $user->name,
                     'email' => $user->id . "@ozbul.com",
                     'real_name' => $user->profile->real_name,
                     'avatar' => $user->profile->image_512,
-                    'color' => (isset($user->color) == true) ? $user->color : "black",
+                    'color' => $color,
                 ]);
+            }
+               
         }
     }
 
@@ -90,6 +96,4 @@ class SlackBackupService
             }
         }
     }
-
-
 }
