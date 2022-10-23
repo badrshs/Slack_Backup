@@ -31,6 +31,7 @@ class SlackBackupService
 
     public function storeUsers()
     {
+        $domain = "@ozbul.com"; //update this and make it config
         $users = $this->slack->listUser();
         foreach ($users as $user) {
             if (!User::find($user->id)){
@@ -41,7 +42,7 @@ class SlackBackupService
              User::Create([
                     'id' => $user->id,
                     'username' => $user->name,
-                    'email' => $user->id . "@ozbul.com",
+                    'email' => $user->id . $domain,
                     'real_name' => $user->profile->real_name,
                     'avatar' => $user->profile->image_512,
                     'color' => $color,
